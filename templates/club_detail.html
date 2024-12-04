@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}{{ club.nom }} - Annuaire Sport Tarn{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title">{{ club.nom }}</h1>
+                    <div class="mb-4">
+                        <span class="badge bg-primary me-2">{{ club.sport }}</span>
+                        <span class="badge bg-secondary me-2">{{ club.ville }}</span>
+                        {% if club.etiquettes %}
+                            {% for tag in club.etiquettes.split(',') %}
+                                <span class="badge bg-info me-2">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <h4>Tranches d'âge</h4>
+                    <ul class="list-unstyled">
+                        {% if 'enfant' in club.tranches_age %}
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Enfant (moins de 12 ans)</li>
+                        {% endif %}
+                        {% if 'adolescent' in club.tranches_age %}
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Adolescent (12 à 18 ans)</li>
+                        {% endif %}
+                        {% if 'adulte' in club.tranches_age %}
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Adulte (18 à 40 ans)</li>
+                        {% endif %}
+                        {% if 'senior' in club.tranches_age %}
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Senior (plus de 40 ans)</li>
+                        {% endif %}
+                    </ul>
+
+                    <h4>Contact</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-envelope"></i> <a href="mailto:{{ club.email }}">{{ club.email }}</a></li>
+                        {% if club.telephone %}
+                            <li><i class="bi bi-telephone"></i> <a href="tel:{{ club.telephone }}">{{ club.telephone }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if club.photos %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Photos du club</h4>
+                    <div class="row">
+                        {% for photo in club.photos %}
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ url_for('static', filename='uploads/' + photo.filename) }}" 
+                               data-lightbox="club-photos">
+                                <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}" 
+                                     class="img-fluid rounded" alt="Photo du club">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Localisation</h4>
+                    <div class="ratio ratio-4x3">
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            frameborder="0"
+                            scrolling="no"
+                            marginheight="0"
+                            marginwidth="0"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox={{ club.ville }}&amp;layer=mapnik">
+                        </iframe>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">{{ club.ville }}, Tarn</small>
+                    </div>
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Administration</h4>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('edit_club', club_id=club.id) }}" 
+                           class="btn btn-warning">Modifier le club</a>
+                        <button type="button" class="btn btn-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteClubModal">
+                            Supprimer le club
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.is_admin %}
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteClubModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer le club "{{ club.nom }}" ?
+                Cette action est irréversible.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form action="{{ url_for('delete_club', club_id=club.id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+{% endblock %}

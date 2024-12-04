@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Annuaire Sport Tarn{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4">Bienvenue sur l'Annuaire Sport Tarn</h1>
+            <p class="lead">Trouvez le club sportif qui vous correspond dans le Tarn</p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-8 offset-md-2">
+            <form action="{{ url_for('recherche') }}" method="GET" class="bg-light p-4 rounded shadow-sm">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <select name="sport" class="form-select">
+                            <option value="">Tous les sports</option>
+                            <option value="football">Football</option>
+                            <option value="tennis">Tennis</option>
+                            <option value="basketball">Basketball</option>
+                            <option value="rugby">Rugby</option>
+                            <!-- Autres sports -->
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select name="ville" class="form-select">
+                            <option value="">Toutes les villes</option>
+                            <option value="albi">Albi</option>
+                            <option value="castres">Castres</option>
+                            <option value="gaillac">Gaillac</option>
+                            <!-- Autres villes -->
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-search fs-1 text-primary mb-3"></i>
+                    <h3>Recherche Simple</h3>
+                    <p>Trouvez rapidement un club par sport ou par ville</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-filter-square fs-1 text-primary mb-3"></i>
+                    <h3>Filtres Avancés</h3>
+                    <p>Affinez votre recherche par âge et type d'activité</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-geo-alt fs-1 text-primary mb-3"></i>
+                    <h3>Proximité</h3>
+                    <p>Découvrez les clubs près de chez vous</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h2 class="mb-4">Clubs récemment ajoutés</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for club in clubs_recents %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if club.photos %}
+                <img src="{{ url_for('static', filename='uploads/' + club.photos[0].filename) }}" 
+                     class="card-img-top" alt="{{ club.nom }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ club.nom }}</h5>
+                    <p class="card-text">
+                        <i class="bi bi-geo-alt"></i> {{ club.ville }}<br>
+                        <i class="bi bi-activity"></i> {{ club.sport }}
+                    </p>
+                    <a href="{{ url_for('voir_club', club_id=club.id) }}" 
+                       class="btn btn-outline-primary">Voir le détail</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Club - Annuaire Sport Tarn{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center mb-0">Ajouter un Club</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.csrf_token }}
+                    
+                    <div class="mb-3">
+                        {{ form.nom.label(class="form-label") }}
+                        {{ form.nom(class="form-control") }}
+                        {% if form.nom.errors %}
+                            {% for error in form.nom.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.sport.label(class="form-label") }}
+                        {{ form.sport(class="form-select") }}
+                        {% if form.sport.errors %}
+                            {% for error in form.sport.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.ville.label(class="form-label") }}
+                        {{ form.ville(class="form-select") }}
+                        {% if form.ville.errors %}
+                            {% for error in form.ville.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.tranches_age.label(class="form-label") }}
+                        {% for value, label in form.tranches_age.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                   name="tranches_age" value="{{ value }}" 
+                                   id="age_{{ value }}">
+                            <label class="form-check-label" for="age_{{ value }}">
+                                {{ label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                        {% if form.tranches_age.errors %}
+                            {% for error in form.tranches_age.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.etiquettes.label(class="form-label") }}
+                        {{ form.etiquettes(class="form-control", placeholder="Ex: Handicap, Féminin, Mixte, Compétition, Loisirs (séparées par des virgules)") }}
+                        {% if form.etiquettes.errors %}
+                            {% for error in form.etiquettes.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                        {% if form.email.errors %}
+                            {% for error in form.email.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.telephone.label(class="form-label") }}
+                        {{ form.telephone(class="form-control") }}
+                        {% if form.telephone.errors %}
+                            {% for error in form.telephone.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation du formulaire
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const ageRanges = document.querySelectorAll('input[name="tranches_age"]:checked');
+        if (ageRanges.length === 0) {
+            e.preventDefault();
+            alert('Veuillez sélectionner au moins une tranche d\'âge');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Recherche - Annuaire Sport Tarn{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Filtres</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('recherche') }}">
+                        <div class="mb-3">
+                            <label class="form-label">Sport</label>
+                            <select name="sport" class="form-select">
+                                <option value="">Tous les sports</option>
+                                <option value="football" {% if request.args.get('sport') == 'football' %}selected{% endif %}>Football</option>
+                                <option value="tennis" {% if request.args.get('sport') == 'tennis' %}selected{% endif %}>Tennis</option>
+                                <option value="basketball" {% if request.args.get('sport') == 'basketball' %}selected{% endif %}>Basketball</option>
+                                <!-- Autres sports -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ville</label>
+                            <select name="ville" class="form-select">
+                                <option value="">Toutes les villes</option>
+                                <option value="albi" {% if request.args.get('ville') == 'albi' %}selected{% endif %}>Albi</option>
+                                <option value="castres" {% if request.args.get('ville') == 'castres' %}selected{% endif %}>Castres</option>
+                                <option value="gaillac" {% if request.args.get('ville') == 'gaillac' %}selected{% endif %}>Gaillac</option>
+                                <!-- Autres villes -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tranches d'âge</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="age" value="enfant" 
+                                       id="age_enfant" {% if 'enfant' in request.args.getlist('age') %}checked{% endif %}>
+                                <label class="form-check-label" for="age_enfant">Enfant (-12 ans)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="age" value="adolescent" 
+                                       id="age_ado" {% if 'adolescent' in request.args.getlist('age') %}checked{% endif %}>
+                                <label class="form-check-label" for="age_ado">Adolescent (12-18 ans)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="age" value="adulte" 
+                                       id="age_adulte" {% if 'adulte' in request.args.getlist('age') %}checked{% endif %}>
+                                <label class="form-check-label" for="age_adulte">Adulte (18-40 ans)</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="age" value="senior" 
+                                       id="age_senior" {% if 'senior' in request.args.getlist('age') %}checked{% endif %}>
+                                <label class="form-check-label" for="age_senior">Senior (+40 ans)</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Étiquettes</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="tags" value="competition" 
+                                       id="tag_competition" {% if 'competition' in request.args.getlist('tags') %}checked{% endif %}>
+                                <label class="form-check-label" for="tag_competition">Compétition</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="tags" value="loisir" 
+                                       id="tag_loisir" {% if 'loisir' in request.args.getlist('tags') %}checked{% endif %}>
+                                <label class="form-check-label" for="tag_loisir">Loisir</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="tags" value="handicap" 
+                                       id="tag_handicap" {% if 'handicap' in request.args.getlist('tags') %}checked{% endif %}>
+                                <label class="form-check-label" for="tag_handicap">Handicap</label>
+                            </div>
+                            <!-- Autres étiquettes -->
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Appliquer les filtres</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h2 class="mb-4">Résultats de la recherche</h2>
+            
+            {% if clubs %}
+                <div class="row">
+                    {% for club in clubs %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            {% if club.photos %}
+                            <img src="{{ url_for('static', filename='uploads/' + club.photos[0].filename) }}" 
+                                 class="card-img-top" alt="{{ club.nom }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ club.nom }}</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-geo-alt"></i> {{ club.ville }}<br>
+                                    <i class="bi bi-activity"></i> {{ club.sport }}
+                                </p>
+                                {% if club.etiquettes %}
+                                <div class="mb-2">
+                                    {% for tag in club.etiquettes.split(',') %}
+                                    <span class="badge bg-secondary me-1">{{ tag.strip() }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <a href="{{ url_for('voir_club', club_id=club.id) }}" 
+                                   class="btn btn-outline-primary">Voir le détail</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Aucun club ne correspond à vos critères de recherche.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
